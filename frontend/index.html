@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rocket WhatsApp Coletor</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 60px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #startBtn { background-color: green; color: white; }
+    #stopBtn { background-color: red; color: white; }
+    #status { margin-top: 30px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>🛰️ Rocket Coletor de Contatos</h1>
+  <button id="startBtn">Iniciar Coleta</button>
+  <button id="stopBtn">Parar Coleta</button>
+  <div id="status">Status: Aguardando</div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+
+    document.getElementById('startBtn').addEventListener('click', async () => {
+      statusEl.textContent = 'Status: Iniciando coleta...';
+      await fetch('/start');
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', async () => {
+      statusEl.textContent = 'Status: Parando...';
+      await fetch('/stop');
+    });
+
+    // Atualiza contador a cada 2 segundos
+    setInterval(async () => {
+      try {
+        const res = await fetch('/status');
+        const data = await res.json();
+        statusEl.textContent = `Status: ${data.coletaAtiva ? 'Coletando' : 'Parado'} — Contatos: ${data.total}`;
+      } catch (err) {
+        statusEl.textContent = 'Erro: sem conexão com servidor';
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
